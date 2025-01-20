@@ -67,4 +67,18 @@ public final class Coin {
     public void setAcquiredDate(LocalDate acquiredDate) {
         this.acquiredDate = acquiredDate;
     }
+
+    @Override
+    public String toString() {
+//        return "Coin{" + "id=" + id + ", country='" + country + '\'' + ", denomination=" + denomination + ", yearOfMint=" + yearOfMint + ", currentValue=" + currentValue + ", acquiredDate=" + acquiredDate + '}';
+//        return "| Coin_ID: " + this.getId() + ", Country: " + this.getCountry() + ", Denomination: " + this.getDenomination() + ", Year of Mint: " + this.getYearOfMint() + ", Current Value: " + this.getCurrentValue() + ", Acquired Date: " + this.getAcquiredDate()+ " \t| ";
+        return String.format(
+                "| %-8s | %-15s | %-15s | %-12s | %-14s | %-15s |",
+                getId(),                // Coin_ID
+                getCountry(),           // Country
+                getDenomination(),      // Denomination
+                getYearOfMint(),        // Year of Mint
+                getCurrentValue(),      // Current Value
+                getAcquiredDate()       // Acquired Date
+        );}
 }
