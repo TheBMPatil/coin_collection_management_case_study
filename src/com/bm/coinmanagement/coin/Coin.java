@@ -12,13 +12,32 @@ public final class Coin {
 
 
     public Coin(double denomination, int id, String country, int yearOfMint, double currentValue, LocalDate acquiredDate) {
-        this.denomination = denomination;
         this.id = id;
         this.country = country;
+        this.denomination = denomination;
         this.yearOfMint = yearOfMint;
         this.currentValue = currentValue;
         this.acquiredDate = acquiredDate;
     }
+
+    public Coin(double denomination, String country, int yearOfMint, double currentValue, LocalDate acquiredDate) {
+        this.country = country;
+        this.denomination = denomination;
+        this.yearOfMint = yearOfMint;
+        this.currentValue = currentValue;
+        this.acquiredDate = acquiredDate;
+    }
+
+    // Copy constructor
+    public Coin(Coin other) {
+        this.id = other.getId();
+        this.country = other.getCountry();
+        this.denomination = other.getDenomination();
+        this.yearOfMint = other.getYearOfMint();
+        this.currentValue = other.getCurrentValue();
+        this.acquiredDate = other.getAcquiredDate();
+    }
+
 
     public int getId() {
         return id;
@@ -80,5 +99,8 @@ public final class Coin {
                 getYearOfMint(),        // Year of Mint
                 getCurrentValue(),      // Current Value
                 getAcquiredDate()       // Acquired Date
-        );}
+        );
+    }
+
+
 }

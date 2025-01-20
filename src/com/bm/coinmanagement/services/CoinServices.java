@@ -12,6 +12,9 @@ public class CoinServices {
     public static void CoinManagement() {
         //Gather All resources
         List<Coin> coinList = new ArrayList<>();
+        List<Coin> updateCoinList = new ArrayList<>();
+        List<Coin> delCoinList = new ArrayList<>();
+        List<Coin> insCoinList = new ArrayList<>();
         Utilities utils = new Utilities();
         try {
             //Establising connection With db
@@ -21,13 +24,44 @@ public class CoinServices {
                 while (true) {
                     switch (utils.mainMenu()) {
                         case 1 -> utils.showAllAvailableCoins(coinList);
-                        case 2 -> System.out.println("Choice 2");
-                        case 3 -> System.out.println("Choice 3");
-                        case 4 -> System.out.println("Choice 4");
+                        case 2 -> {
+                            utils.showAllAvailableCoins(coinList);
+                            utils.addCoin(insCoinList, coinList);
+                            System.out.println("Newly added : ");
+                            utils.showAllAvailableCoins(insCoinList);
+                        }
+                        case 3 -> {
+                            utils.showAllAvailableCoins(coinList);
+                            utils.deleteCoin(delCoinList, coinList);
+                            System.out.println("Deleted : ");
+                            utils.showAllAvailableCoins(delCoinList);
+
+                        }
+
+                        case 4 -> {
+                            utils.showAllAvailableCoins(coinList);
+                            utils.updateCoin(updateCoinList, coinList);
+                            System.out.println("Updated : ");
+                            utils.showAllAvailableCoins(updateCoinList);
+                        }
+
                         case 5 -> System.out.println("Choice 5");
-                        case 6 -> System.out.println("Choice 6");
-                        case 7 -> System.out.println("Choice 7");
+                        case 6 -> System.out.println("Not yet possible..! Coming soon??");
+
+                        case 7 -> {
+                            if (utils.commitChanges(con, insCoinList, delCoinList, updateCoinList)) {
+                                System.out.println("Commited changes successfully");
+                                insCoinList.clear();
+                                delCoinList.clear();
+                                updateCoinList.clear();
+                                coinList.clear();
+                                coinList = utils.getAllCoins(con);
+                            } else System.out.println("Unable to complete operation");
+                        }
                         case 0 -> {
+                            if (utils.commitChanges(con, insCoinList, delCoinList, updateCoinList)) {
+                                System.out.println("Commited changes successfully");
+                            } else System.out.println("Unable to complete operation");
                             System.out.println("Exit...");
                             return;
                         }
