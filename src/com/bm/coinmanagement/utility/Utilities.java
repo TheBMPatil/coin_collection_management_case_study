@@ -13,7 +13,6 @@ public class Utilities implements CoinDAO {
     static Scanner sc = new Scanner(System.in);
 
     @Override
-
     public void addCoin(List<Coin> coins, List<Coin> originalCoins) {
 
         sc.nextLine();
@@ -219,7 +218,6 @@ public class Utilities implements CoinDAO {
     }
 
     @Override
-
     public boolean commitChanges(Connection con, List<Coin> insCoins, List<Coin> delCoins, List<Coin> updateCoins) {
         String insertSQL = "INSERT INTO coin_collection (country, denomination, year_of_mint, current_value, acquired_date) VALUES (?, ?, ?, ?, ?)";
         String deleteSQL = "DELETE FROM coin_collection WHERE id = ?";
