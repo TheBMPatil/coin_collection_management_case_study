@@ -45,7 +45,17 @@ public class CoinServices {
                             utils.showAllAvailableCoins(updateCoinList);
                         }
 
-                        case 5 -> System.out.println("Choice 5");
+                        case 5 -> {
+                            utils.showAllAvailableCoins(coinList);
+
+                            System.out.println("How many coins do you want to add : ");
+                            int noOfCoins = Utilities.sc.nextInt();
+                            for (int i = 1; i <= noOfCoins; i++) {
+                                utils.addCoin(insCoinList, coinList);
+                            }
+                            System.out.println("Newly added : ");
+                            utils.showAllAvailableCoins(insCoinList);
+                        }
                         case 6 -> System.out.println("Not yet possible..! Coming soon??");
 
                         case 7 -> {
@@ -58,6 +68,7 @@ public class CoinServices {
                                 coinList = utils.getAllCoins(con);
                             } else System.out.println("Unable to complete operation");
                         }
+                        case 8 -> utils.searchSort(coinList);
                         case 0 -> {
                             if (utils.commitChanges(con, insCoinList, delCoinList, updateCoinList)) {
                                 System.out.println("Commited changes successfully");

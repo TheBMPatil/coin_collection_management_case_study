@@ -8,9 +8,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Utilities implements CoinDAO {
-    static Scanner sc = new Scanner(System.in);
+    public static Scanner sc = new Scanner(System.in);
 
     @Override
     public void addCoin(List<Coin> coins, List<Coin> originalCoins) {
@@ -291,11 +292,11 @@ public class Utilities implements CoinDAO {
 
 
     public void showAllAvailableCoins(List<Coin> coins) {
-        System.out.println("\n-----------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("\n--------------------------------------------------------------------------------------------------");
         System.out.println("Coins in collection:");
-        System.out.println("|------------------------------------------------------------------------------------------------|");
+        System.out.println("+----------+-----------------+-----------------+--------------+----------------+-----------------+");
         System.out.println(String.format("| %-8s | %-15s | %-15s | %-12s | %-14s | %-15s |", "Coin_ID", "Country", "Denomination", "Year of Mint", "Current Value", "Acquired Date"));
-        System.out.println("|------------------------------------------------------------------------------------------------|");
+        System.out.println("|----------|-----------------|-----------------|--------------|----------------|-----------------|");
 
 
         for (Coin coin : coins) {
@@ -303,37 +304,18 @@ public class Utilities implements CoinDAO {
 //            System.out.println("ID: " + coin.getId() + ", Country: " + coin.getCountry() + ", Denomination: " + coin.getDenomination() + ", Year of Mint: " + coin.getYearOfMint() + ", Current Value: " + coin.getCurrentValue() + ", Acquired Date: " + coin.getAcquiredDate());
 
         }
-        System.out.println("|________________________________________________________________________________________________|");
+        System.out.println("|__________|_________________|_________________|______________|________________|_________________|");
     }
 
 
     public int mainMenu() {
 
-        int choice = -1; // Initialize with an invalid value
-        boolean validInput = false;
+        System.out.println("\n__________________________________________________________________________________________________");
+        System.out.println("1 ) : Show Available Collection\n" + "2 ) : Add Single Coin in collection\n" + "3 ) : Delete Single Coin from collection\n" + "4 ) : Update Single Coin in collection\n" + "5 ) : Add Multiple Coins in collection\n" + "6 ) : Add Coins in collection from CSV\n" + "7 ) : Save Current State in Database\n" + "8 ) : Search Sort \n" + "0 ) : Exit by saving changes");
+        System.out.println("__________________________________________________________________________________________________");
 
-        while (!validInput) {
-            try {
-                System.out.println("\n__________________________________________________________________________________________________________________________________________");
-                System.out.println("1 ) : Show Available Collection\n" + "2 ) : Add Single Coin in collection\n" + "3 ) : Delete Single Coin from collection\n" + "4 ) : Update Single Coin in collection\n" + "5 ) : Add Multiple Coins in collection\n" + "6 ) : Add Coins in collection from CSV\n" + "7 ) : Save Current State in Database\n" + "0 ) : Exit by saving changes\n");
-
-                System.out.print("Enter your choice: ");
-                choice = sc.nextInt();
-
-                if (choice >= 0 && choice <= 7) {
-                    validInput = true;
-                } else {
-                    System.out.println("Invalid choice! Please enter a number between 0 and 7.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input! Please enter a valid integer.");
-                sc.next();
-            }
-        }
-
-        return choice;
+        return getValidIntInput(0, 8, "Enter your choice: ");
     }
-
 
     public LocalDate convertStringToLocalDate(String dateStr) {
 
@@ -341,5 +323,193 @@ public class Utilities implements CoinDAO {
         return LocalDate.parse(dateStr, formatter);
     }
 
+
+    public void searchSort(List<Coin> coinList) {
+        while (true) {
+            System.out.println("\nSearch/Sort Menu");
+            System.out.println("1. Search by Country");
+            System.out.println("2. Search by Year of Minting");
+            System.out.println("3. Search by Current Value (Sorted)");
+            System.out.println("4. Search by Country + Denomination");
+            System.out.println("5. Search by Country + Year of Minting");
+            System.out.println("6. Search by Country + Denomination + Year of Minting");
+            System.out.println("7. Search by Acquired Date + Country");
+            System.out.println("8. Sort by Country");
+            System.out.println("9. Sort by Year of Minting");
+            System.out.println("10. Sort by Current Value (Descending)");
+            System.out.println("11. Back to Main Menu");
+            System.out.print("Enter your choice: ");
+            int choice = getValidIntInput(1, 12, "Enter your choice: ");
+
+            switch (choice) {
+                case 1:
+                    this.searchByCountry(coinList);
+                    break;
+                case 2:
+                    this.searchByYearOfMinting(coinList);
+                    break;
+                case 3:
+                    this.sortByCurrentValue(coinList, true); // Ascending order
+                    break;
+                case 4:
+                    this.searchByCountryDenomination(coinList);
+                    break;
+                case 5:
+                    this.searchByCountryYear(coinList);
+                    break;
+                case 6:
+                    this.searchByAllThree(coinList);
+                    break;
+                case 7:
+                    this.searchByAcquiredDateCountry(coinList);
+                    break;
+                case 8:
+                    this.sortByCountry(coinList);
+                    break;
+                case 9:
+                    this.sortByYearOfMinting(coinList);
+                    break;
+                case 10:
+                    this.sortByCurrentValue(coinList, false); // Descending order
+                    break;
+                case 11:
+                    return;
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
+    }
+
+    private void searchByCountry(List<Coin> coinList) {
+        System.out.print("Enter the country: ");
+        String country = sc.next();
+        List<Coin> filteredList = coinList.stream().filter(coin -> coin.getCountry().equalsIgnoreCase(country)).collect(Collectors.toList());
+        if (filteredList.isEmpty()) {
+            System.out.println("No coins found for that country.");
+        } else {
+            System.out.println("\nSearch Results (By Country):");
+            this.showAllAvailableCoins(filteredList);
+        }
+    }
+
+    private void searchByYearOfMinting(List<Coin> coinList) {
+        System.out.print("Enter the year of minting: ");
+        int year = sc.nextInt();
+        List<Coin> filteredList = coinList.stream().filter(coin -> coin.getYearOfMint() == year).collect(Collectors.toList());
+        if (filteredList.isEmpty()) {
+            System.out.println("No coins found for that year of minting.");
+        } else {
+            System.out.println("\nSearch Results (By Year of Minting):");
+            this.showAllAvailableCoins(filteredList);
+        }
+    }
+
+
+    private void searchByCountryDenomination(List<Coin> coinList) {
+        System.out.print("Enter the country: ");
+        String country = sc.next();
+        System.out.print("Enter the denomination: ");
+        double denomination = sc.nextDouble();
+        List<Coin> filteredList = coinList.stream().filter(coin -> coin.getCountry().equalsIgnoreCase(country) && coin.getDenomination() == denomination).collect(Collectors.toList());
+        if (filteredList.isEmpty()) {
+            System.out.println("No coins found for that country and denomination.");
+        } else {
+            System.out.println("\nSearch Results (By Country + Denomination):");
+            this.showAllAvailableCoins(filteredList);
+        }
+    }
+
+    private void sortByCurrentValue(List<Coin> coinList, boolean ascending) {
+        coinList.sort((coin1, coin2) -> {
+            if (ascending) {
+                return Double.compare(coin1.getCurrentValue(), coin2.getCurrentValue());
+            } else {
+                return Double.compare(coin2.getCurrentValue(), coin1.getCurrentValue());
+            }
+        });
+        this.showAllAvailableCoins(coinList);
+    }
+
+    private void searchByCountryYear(List<Coin> coinList) {
+        System.out.print("Enter the country: ");
+        String country = sc.next();
+        System.out.print("Enter the year of minting: ");
+        int year = sc.nextInt();
+        List<Coin> filteredList = coinList.stream().filter(coin -> coin.getCountry().equalsIgnoreCase(country) && coin.getYearOfMint() == year).collect(Collectors.toList());
+        if (filteredList.isEmpty()) {
+            System.out.println("No coins found for that country and year.");
+        } else {
+            System.out.println("\nSearch Results (By Country + Year):");
+            this.showAllAvailableCoins(filteredList);
+        }
+    }
+
+    private void searchByAllThree(List<Coin> coinList) {
+        System.out.print("Enter the country: ");
+        String country = sc.next();
+        System.out.print("Enter the denomination: ");
+        double denomination = sc.nextDouble();
+        System.out.print("Enter the year of minting: ");
+        int year = sc.nextInt();
+        List<Coin> filteredList = coinList.stream().filter(coin -> coin.getCountry().equalsIgnoreCase(country) && coin.getDenomination() == denomination && coin.getYearOfMint() == year).collect(Collectors.toList());
+        if (filteredList.isEmpty()) {
+            System.out.println("No coins found matching all criteria.");
+        } else {
+            System.out.println("\nSearch Results (By Country + Denomination + Year):");
+            this.showAllAvailableCoins(filteredList);
+        }
+    }
+
+    private void searchByAcquiredDateCountry(List<Coin> coinList) {
+        System.out.print("Enter the acquired date (YYYY-MM-DD): ");
+        String dateString = sc.next();
+        System.out.print("Enter the country: ");
+        String country = sc.next();
+
+        try {
+            LocalDate acquiredDate = LocalDate.parse(dateString);
+            List<Coin> filteredList = coinList.stream().filter(coin -> coin.getAcquiredDate().equals(acquiredDate) && coin.getCountry().equalsIgnoreCase(country)).collect(Collectors.toList());
+
+            if (filteredList.isEmpty()) {
+                System.out.println("No coins found for that acquired date and country.");
+            } else {
+                System.out.println("\nSearch Results (By Acquired Date + Country):");
+                this.showAllAvailableCoins(filteredList);
+            }
+        } catch (java.time.format.DateTimeParseException e) {
+            System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+        }
+    }
+
+    private void sortByCountry(List<Coin> coinList) {
+        coinList.sort(Comparator.comparing(Coin::getCountry));
+        System.out.println("\nSorted by Country:");
+        this.showAllAvailableCoins(coinList);
+    }
+
+    private void sortByYearOfMinting(List<Coin> coinList) {
+        coinList.sort(Comparator.comparingInt(Coin::getYearOfMint));
+        System.out.println("\nSorted by Year of Minting:");
+        this.showAllAvailableCoins(coinList);
+        this.showAllAvailableCoins(coinList);
+    }
+
+    public static int getValidIntInput(int min, int max, String prompt) {
+        int input;
+        while (true) {
+            System.out.print(prompt); // Display the prompt
+            try {
+                input = sc.nextInt();
+                if (input >= min && input <= max) {
+                    return input; // Valid input, return it
+                } else {
+                    System.out.println("Invalid input. Please enter a number between " + min + " and " + max + " (inclusive).");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter an integer.");
+                sc.next(); // Clear the invalid input from the scanner
+            }
+        }
+    }
 
 }
